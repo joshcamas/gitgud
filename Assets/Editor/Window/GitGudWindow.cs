@@ -1,9 +1,15 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using System;
 
 namespace GitGud.UI
 {
+    public enum FilePathModes
+    {
+        Staged, Unstaged
+    }
+
     public class GitGudWindow : EditorWindow
     {
         public List<Tab> tabs;
@@ -17,10 +23,48 @@ namespace GitGud.UI
             GitGudWindow.GetWindow(typeof(GitGudWindow), false, "GitGud");
         }
 
-        //Temporary function that is all tabs (will use attribute eventually)
+        //Scan for tab attributes
         public void BuildTabList()
         {
-            tabs = new List<Tab>() { new ChangesTab(), new HistoryTab(),new SettingsTab() };
+            tabs = new List<Tab>();
+
+            GitUtility.ForEachTypeWith<TabAttribute>(true, (type, attribute) =>
+            {
+                Tab newTab = (Tab)Activator.CreateInstance(type);
+
+                //No set index, don't care about it then
+                if (attribute.index < 0)
+                    tabs.Add(newTab);
+                else
+                {
+                   //Crazy code that adds tab at correct index
+
+                    if(tabs.Count >= attribute.index)
+                        tabs.Insert(attribute.index, newTab);
+
+                    else if(tabs.Count == attribute.index)
+                        tabs.Add(newTab);
+
+                    else
+                    {
+                        while (tabs.Count <= attribute.index)
+                            tabs.Add(null);
+
+                        tabs[attribute.index] = newTab;
+                    }
+                }
+            });
+
+            //Delete null tabs
+            for(int i =0;i<tabs.Count;i++)
+            {
+                if (tabs[i] == null)
+                {
+                    tabs.RemoveAt(i);
+                    i--;
+                } 
+            }
+
         }
 
         private void OnEnable()

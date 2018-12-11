@@ -5,6 +5,7 @@ using System.IO;
 
 namespace GitGud.UI
 {
+    [PathContext(FilePathModes.Staged | FilePathModes.Unstaged)]
     public class ShowInExplorerContextOption : PathContextOption
     {
         //Path of context menu
@@ -39,6 +40,7 @@ namespace GitGud.UI
         }
     }
 
+    [PathContext(FilePathModes.Staged | FilePathModes.Unstaged)]
     public class SelectInProjectContextOption : PathContextOption
     {
         //Path of context menu

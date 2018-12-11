@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using System;
 
 namespace GitGud.UI
 {
+    [Tab(0)]
     public class ChangesTab : Tab
     {
         private FileViewer unstagedFileViewer;
@@ -12,13 +14,15 @@ namespace GitGud.UI
         private GitFile[] unstagedFiles;
         private GitFile[] stagedFiles;
 
-        private PathContextOption[] contextOptions;
+        private List<PathContextOption> stagedContextOptions;
+        private List<PathContextOption> unstagedContextOptions;
 
         private string commitText;
         private bool autoPush = true;
 
         private bool error = false;
         private string errorString;
+
 
         public override string GetName()
         {
@@ -30,10 +34,10 @@ namespace GitGud.UI
             BuildContextLists();
 
             stagedFileViewer = new FileViewer();
-            stagedFileViewer.Init("Staged", contextOptions);
+            stagedFileViewer.Init("Staged", stagedContextOptions);
 
             unstagedFileViewer = new FileViewer();
-            unstagedFileViewer.Init("Unstaged", contextOptions);
+            unstagedFileViewer.Init("Unstaged", unstagedContextOptions);
 
             Scan();
 
@@ -149,11 +153,21 @@ namespace GitGud.UI
 
         }
 
-        //Temporary function that hard-codedly builds a list of supported
-        //Context options for the staged/unstaged files
+        //Scan attributes for context lists
         private void BuildContextLists()
         {
-            contextOptions = new PathContextOption[] { new SelectInProjectContextOption(), new ShowInExplorerContextOption() };
+            stagedContextOptions = new List<PathContextOption>();
+            unstagedContextOptions = new List<PathContextOption>();
+
+            GitUtility.ForEachTypeWith<PathContextAttribute>(true, (type, attribute) =>
+            {
+                if ((attribute.mode & FilePathModes.Staged) == FilePathModes.Staged)
+                    stagedContextOptions.Add((PathContextOption)Activator.CreateInstance(type));
+
+                if ((attribute.mode & FilePathModes.Unstaged) == FilePathModes.Unstaged)
+                    unstagedContextOptions.Add((PathContextOption)Activator.CreateInstance(type));
+
+            });
         }
 
         /// <summary>

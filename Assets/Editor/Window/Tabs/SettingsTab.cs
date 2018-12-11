@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace GitGud.UI
 {
+    [Tab(2)]
     public class SettingsTab : Tab
     {
         public override string GetName()

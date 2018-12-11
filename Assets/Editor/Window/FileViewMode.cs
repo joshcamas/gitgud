@@ -7,11 +7,11 @@ namespace GitGud.UI
 {
     public class FileViewMode
     {
-        protected PathContextOption[] contextOptions;
+        protected List<PathContextOption> contextOptions;
         protected Dictionary<FileStatus, Texture2D> fileStatusIcons;
 
         //Initializes viewer, and applies context hooks
-        public virtual void Init(PathContextOption[] contextOptions)
+        public virtual void Init(List<PathContextOption> contextOptions)
         {
             this.contextOptions = contextOptions;
             BuildIcons();

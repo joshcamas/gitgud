@@ -11,7 +11,7 @@ namespace GitGud.UI
         private Vector2 scrollPosition;
         private List<GitFile> selectedFiles;
 
-        public override void Init(PathContextOption[] contextOptions)
+        public override void Init(List<PathContextOption> contextOptions)
         {
             base.Init(contextOptions);
             selectedFiles = new List<GitFile>();

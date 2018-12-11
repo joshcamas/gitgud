@@ -8,7 +8,7 @@ namespace GitGud.UI
 {
     public class FileViewer
     {
-        private PathContextOption[] contextOptions;
+        private List<PathContextOption> contextOptions;
         private FileViewMode viewMode;
         protected string title;
 
@@ -27,7 +27,7 @@ namespace GitGud.UI
             return viewModes;
         }
 
-        public void Init(string title,PathContextOption[] contextOptions)
+        public void Init(string title,List<PathContextOption> contextOptions)
         {
             this.title = title;
             this.contextOptions = contextOptions;
