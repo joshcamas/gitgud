@@ -1,5 +1,7 @@
 # gitgud
-A simple unity-based git client
+A simple unity-based git client with a focus on extendability 
+
+<img src="https://i.imgur.com/ZY7Bood.png">
 
 ### Features 
 * Simple settings
