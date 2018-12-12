@@ -6,13 +6,14 @@ namespace GitGud.UI
 {
     //Attribute that hooks onto path context menus
     [AttributeUsage(AttributeTargets.Class)]
-    public class PathContextAttribute : Attribute
+    public class PathContextAttribute : Attribute, IOrderedAttribute
     {
-        public FilePathModes mode;
+        public FilePathMode mode;
+        public int index;
 
-        public PathContextAttribute(FilePathModes mode)
+        public int GetIndex()
         {
-            this.mode = mode;
+            return index;
         }
     }
 

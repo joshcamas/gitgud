@@ -8,7 +8,7 @@ namespace GitGud.UI
 {
     public class FileViewer
     {
-        private List<PathContextOption> contextOptions;
+        private List<ContextOption<string>> contextOptions;
         private FileViewMode viewMode;
         protected string title;
 
@@ -27,7 +27,7 @@ namespace GitGud.UI
             return viewModes;
         }
 
-        public void Init(string title,List<PathContextOption> contextOptions)
+        public void Init(string title,List<ContextOption<string>> contextOptions)
         {
             this.title = title;
             this.contextOptions = contextOptions;
@@ -48,15 +48,15 @@ namespace GitGud.UI
             viewMode.Render(files);
         }
 
-        public string[] GetSelectedPaths()
+        public List<string> GetSelectedPaths()
         {
             if (viewMode == null)
-                return new string[0];
+                return new List<string>();
 
             return viewMode.GetSelectedPaths();
         }
 
-        public void SetSelectedPaths(string[] paths)
+        public void SetSelectedPaths(List<string> paths)
         {
             if (viewMode == null)
                 return;

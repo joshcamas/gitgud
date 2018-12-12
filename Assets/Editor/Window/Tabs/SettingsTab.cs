@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GitGud.UI
 {
-    [Tab(2)]
+    [Tab(index = 40)]
     public class SettingsTab : Tab
     {
         public override string GetName()
@@ -12,7 +12,7 @@ namespace GitGud.UI
             return "Settings";
         }
 
-        public override void Render(EditorWindow window)
+        public override void Render(GitGudWindow window)
         {
             EditorGUILayout.LabelField("GitGud: A rad source control from within Unity", EditorStyles.boldLabel);
 

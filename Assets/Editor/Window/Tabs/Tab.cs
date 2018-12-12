@@ -20,8 +20,14 @@ namespace GitGud.UI
         {
 
         }
-        
-        public virtual void Render(EditorWindow window)
+
+        public virtual void Render(GitGudWindow window)
+        {
+
+        }
+
+        //Used to reset the page, such as rescanning data
+        public virtual void Refresh()
         {
 
         }

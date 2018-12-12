@@ -5,15 +5,17 @@ using System;
 
 namespace GitGud.UI
 {
-    public enum FilePathModes
+    public enum FilePathMode
     {
         Staged, Unstaged
     }
 
     public class GitGudWindow : EditorWindow
     {
-        public List<Tab> tabs;
-        public int selectedTab;
+        private List<Tab> tabs;
+        private int selectedTab;
+
+        private List<TopButton> topButtons;
 
         //Window creation
         [MenuItem("GitGud/GitGud")]
@@ -28,51 +30,32 @@ namespace GitGud.UI
         {
             tabs = new List<Tab>();
 
-            GitUtility.ForEachTypeWith<TabAttribute>(true, (type, attribute) =>
+            GitUtility.ForEachTypeWithOrdered<TabAttribute>(true, (type, attribute) =>
             {
-                Tab newTab = (Tab)Activator.CreateInstance(type);
-
-                //No set index, don't care about it then
-                if (attribute.index < 0)
-                    tabs.Add(newTab);
-                else
-                {
-                   //Crazy code that adds tab at correct index
-
-                    if(tabs.Count >= attribute.index)
-                        tabs.Insert(attribute.index, newTab);
-
-                    else if(tabs.Count == attribute.index)
-                        tabs.Add(newTab);
-
-                    else
-                    {
-                        while (tabs.Count <= attribute.index)
-                            tabs.Add(null);
-
-                        tabs[attribute.index] = newTab;
-                    }
-                }
+                tabs.Add((Tab)Activator.CreateInstance(type));
             });
 
-            //Delete null tabs
-            for(int i =0;i<tabs.Count;i++)
-            {
-                if (tabs[i] == null)
-                {
-                    tabs.RemoveAt(i);
-                    i--;
-                } 
-            }
+        }
 
+        public void BuildTopButtonList()
+        {
+            topButtons = new List<TopButton>();
+
+            GitUtility.ForEachTypeWithOrdered<TopButtonAttribute>(true, (type, attribute) =>
+            {
+                TopButton button = (TopButton)Activator.CreateInstance(type);
+                button.flexibleSpaceAfter = attribute.flexibleSpaceAfter;
+                topButtons.Add(button);
+            });
         }
 
         private void OnEnable()
         {
             BuildTabList();
+            BuildTopButtonList();
 
             //Select default tab
-            if(tabs.Count > 0)
+            if (tabs.Count > 0)
                 tabs[0].OnEnable();
 
         }
@@ -90,24 +73,16 @@ namespace GitGud.UI
 
         private void RenderTopBar()
         {
-            //Top bar doesn't do anything yet
-            EditorGUI.BeginDisabledGroup(true);
 
             EditorGUILayout.BeginHorizontal("Toolbar", GUILayout.ExpandWidth(true));
+            
+            foreach(TopButton button in topButtons)
+            {
+                button.Render(this);
+            }
 
-            GUILayout.Button("Commit", "ToolbarButton", GUILayout.ExpandWidth(false));
-            GUILayout.Button("Pull", "ToolbarButton", GUILayout.ExpandWidth(false));
-            GUILayout.Button("Push (0)", "ToolbarButton", GUILayout.ExpandWidth(false));
-            GUILayout.Button("Fetch", "ToolbarButton", GUILayout.ExpandWidth(false));
-            GUILayout.FlexibleSpace();
-            GUILayout.Button("Merge", "ToolbarButton", GUILayout.ExpandWidth(false));
-            GUILayout.Button("Branch", "ToolbarButton", GUILayout.ExpandWidth(false));
-            GUILayout.FlexibleSpace();
-            GUILayout.Button("Stash", "ToolbarButton", GUILayout.ExpandWidth(false));
-            GUILayout.Button("Discard", "ToolbarButton", GUILayout.ExpandWidth(false));
             EditorGUILayout.EndHorizontal();
 
-            EditorGUI.EndDisabledGroup();
         }
 
         private void RenderTabBar()

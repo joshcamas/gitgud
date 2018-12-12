@@ -1,14 +1,17 @@
 using System.Collections.Generic;
+using System;
 using UnityEditor;
 using UnityEngine;
 
 namespace GitGud.UI
 {
-    [Tab(1)]
+    [Tab(index = 30)]
     public class HistoryTab : Tab
     {
         private List<Commit> commits;
         private CommitListGUI commitList;
+
+        private List<ContextOption<Commit>> commitContextOptions;
 
         public override string GetName()
         {
@@ -17,11 +20,25 @@ namespace GitGud.UI
 
         public override void OnEnable()
         {
+            BuildContextLists();
+
             commitList = new CommitListGUI();
-            commitList.OnEnable();
+            commitList.OnEnable(commitContextOptions);
 
             ScanHistory();
         }
+
+        //Scan attributes for context lists
+        private void BuildContextLists()
+        {
+            commitContextOptions = new List<ContextOption<Commit>>();
+
+            GitUtility.ForEachTypeWithOrdered<CommitContextAttribute>(true, (type, attribute) =>
+            {
+                commitContextOptions.Add((ContextOption<Commit>)Activator.CreateInstance(type));
+            });
+        }
+
 
         private void ScanHistory()
         {
@@ -37,7 +54,7 @@ namespace GitGud.UI
             });
         }
 
-        public override void Render(EditorWindow window)
+        public override void Render(GitGudWindow window)
         {
             if (commits == null)
                 return;

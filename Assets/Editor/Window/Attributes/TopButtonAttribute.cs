@@ -4,11 +4,12 @@ using UnityEngine;
 
 namespace GitGud.UI
 {
-    //Attribute that hooks onto the window
+    //Attribute that hooks onto the top buttons in the git gud window
     [AttributeUsage(AttributeTargets.Class)]
-    public class TabAttribute : Attribute, IOrderedAttribute
+    public class TopButtonAttribute : Attribute, IOrderedAttribute
     {
-        public int index = -1;
+        public int index;
+        public bool flexibleSpaceAfter = false;
 
         public int GetIndex()
         {

@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace GitGud.UI
 {
-    //Attribute that hooks onto the window
+    //Attribute that hooks onto commit context menus
     [AttributeUsage(AttributeTargets.Class)]
-    public class TabAttribute : Attribute, IOrderedAttribute
+    public class CommitContextAttribute : Attribute, IOrderedAttribute
     {
         public int index = -1;
 

@@ -7,11 +7,12 @@ namespace GitGud.UI
 {
     public class FileViewMode
     {
-        protected List<PathContextOption> contextOptions;
+        //Context options that handle paths
+        protected List<ContextOption<string>> contextOptions;
         protected Dictionary<FileStatus, Texture2D> fileStatusIcons;
 
         //Initializes viewer, and applies context hooks
-        public virtual void Init(List<PathContextOption> contextOptions)
+        public virtual void Init(List<ContextOption<string>> contextOptions)
         {
             this.contextOptions = contextOptions;
             BuildIcons();
@@ -24,13 +25,13 @@ namespace GitGud.UI
         }
 
         //Returns the currently selected paths
-        public virtual string[] GetSelectedPaths()
+        public virtual List<string> GetSelectedPaths()
         {
-            return new string[0];
+            return new List<string>();
         }
 
         //Forces selection of paths
-        public virtual void SetSelectedPaths(string[] selectedPaths)
+        public virtual void SetSelectedPaths(List<string> selectedPaths)
         {
 
         }
@@ -48,27 +49,6 @@ namespace GitGud.UI
             }
         }
 
-        protected virtual void ShowContextMenu(string[] selectedPaths)
-        {
-            GenericMenu menu = new GenericMenu();
-            bool multipleSelected = (selectedPaths.Length > 1);
-
-            foreach (PathContextOption option in contextOptions)
-            {
-                //Render disabled item if option is disabled
-                if (option.IsDisabled(selectedPaths))
-                    menu.AddDisabledItem(new GUIContent(option.GetContextPath()));
-                else 
-                    //Otherwise render actual item
-                    menu.AddItem(new GUIContent(option.GetContextPath()), false, () => 
-                    {
-                        option.OnSelect(selectedPaths);
-                    });
-
-            }
-
-            menu.ShowAsContext();
-        }
     }
 
     public enum FileStatus
@@ -110,25 +90,13 @@ namespace GitGud.UI
             }
         }
 
-        public static string[] GetPaths(GitFile[] files)
+        public static List<string> GetPaths(List<GitFile> files)
         {
-            string[] paths = new string[files.Length];
-
-            for (int i = 0; i < files.Length; i++)
-            {
-                paths[i] = files[i].path;
-            }
-
-            return paths;
-        }
-
-        public static string[] GetPaths(List<GitFile> files)
-        {
-            string[] paths = new string[files.Count];
+            List<string> paths = new List<string>();
 
             for (int i = 0; i < files.Count; i++)
             {
-                paths[i] = files[i].path;
+                paths.Add(files[i].path);
             }
 
             return paths;

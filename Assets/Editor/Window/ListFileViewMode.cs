@@ -11,16 +11,16 @@ namespace GitGud.UI
         private Vector2 scrollPosition;
         private List<GitFile> selectedFiles;
 
-        public override void Init(List<PathContextOption> contextOptions)
+        public override void Init(List<ContextOption<string>> contextOptions)
         {
             base.Init(contextOptions);
             selectedFiles = new List<GitFile>();
         }
 
-        public override string[] GetSelectedPaths()
+        public override List<string> GetSelectedPaths()
         {
             if (selectedFiles == null)
-                return new string[0];
+                return new List<string>();
 
             return GitFile.GetPaths(selectedFiles);
         }
@@ -62,7 +62,7 @@ namespace GitGud.UI
                 //Context click
                 if(mouse == 1)
                 {
-                    ShowContextMenu(GitFile.GetPaths(selectedFiles));
+                    ContextOption<string>.ShowContextMenu(GitFile.GetPaths(selectedFiles),contextOptions);
                 }
             });
 

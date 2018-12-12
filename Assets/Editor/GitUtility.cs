@@ -54,6 +54,65 @@ namespace GitGud
                    select t;
         }
 
+        /// <summary>
+        /// Helper function that runs a function for every type with a specific attribute in order, using IOrderedAttribute
+        /// </summary>
+        /// <typeparam name="TAttribute"></typeparam>
+        /// <param name="inherit"></param>
+        /// <returns></returns>
+        public static void ForEachTypeWithOrdered<TAttribute>(bool inherit, Action<Type, TAttribute> function)
+                                     where TAttribute : System.Attribute, IOrderedAttribute
+        {
+            List<Type> types = new List<Type>();
+            List<TAttribute> attributes = new List<TAttribute>();
+
+            GitUtility.ForEachTypeWith<TAttribute>(true, (type, attribute) =>
+            {
+                //No set index, don't care about it then
+                if (attribute.GetIndex() < 0)
+                {
+                    types.Add(type);
+                    attributes.Add(attribute);
+                }     
+                else
+                {
+                    //Add type at correct index
+                    //TODO: Make types not override each other
+                    if (types.Count >= attribute.GetIndex())
+                    {
+                        types.Insert(attribute.GetIndex(), type);
+                        attributes.Insert(attribute.GetIndex(), attribute);
+                    }
+                        
+                    else if (types.Count == attribute.GetIndex())
+                    {
+                        types.Add(type);
+                        attributes.Add(attribute);
+                    }
+                        
+                    else
+                    {
+                        while (types.Count <= attribute.GetIndex())
+                        {
+                            types.Add(null);
+                            attributes.Add(null);
+                        }
+                            
+                        types[attribute.GetIndex()] = type;
+                        attributes[attribute.GetIndex()] = attribute;
+                    }
+                }
+            });
+            
+            for(int i =0;i<types.Count;i++)
+            {
+                if (types[i] == null)
+                    continue;
+
+                function(types[i], attributes[i]);
+            }
+        }
+
     }
 
 }

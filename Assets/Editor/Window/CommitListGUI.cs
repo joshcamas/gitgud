@@ -10,10 +10,11 @@ namespace GitGud.UI
     {
         private Vector2 scrollPosition;
         private List<Commit> selectedCommits;
+        private List<ContextOption<Commit>> contextOptions;
 
-        public void OnEnable()
+        public void OnEnable(List<ContextOption<Commit>> contextOptions)
         {
-
+            this.contextOptions = contextOptions;
         }
 
         public void Render(List<Commit> commits)
@@ -22,12 +23,12 @@ namespace GitGud.UI
 
             //Render list of files
             selectedCommits = SelectableListGUI.RenderList<Commit>(commits, selectedCommits, RenderCommit,
-            (selectedFiles, mouse) =>
+            (selectedCommits, mouse) =>
             {
                 //Context click
                 if (mouse == 1)
                 {
-                   // ShowContextMenu(GitFile.GetPaths(selectedFiles));
+                    ContextOption<Commit>.ShowContextMenu(selectedCommits, contextOptions);
                 }
             });
 

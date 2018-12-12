@@ -81,15 +81,15 @@ namespace GitGud
         }
 
         //Stage a list of paths
-        public static void StagePaths(string[] paths, Action<CommandOutput> onComplete)
+        public static void StagePaths(List<string> paths, Action<CommandOutput> onComplete)
         {
-            StagePath(string.Join(" ", paths), onComplete);
+            StagePath(string.Join(" ", paths.ToArray()), onComplete);
         }
 
         //Unstage a list of paths
-        public static void UnstagePaths(string[] paths, Action<CommandOutput> onComplete)
+        public static void UnstagePaths(List<string> paths, Action<CommandOutput> onComplete)
         {
-            UnstagePath(string.Join(" ", paths), onComplete);
+            UnstagePath(string.Join(" ", paths.ToArray()), onComplete);
         }
 
         //Returns list of stashes, in order by index

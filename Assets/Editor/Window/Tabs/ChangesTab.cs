@@ -5,7 +5,7 @@ using System;
 
 namespace GitGud.UI
 {
-    [Tab(0)]
+    [Tab(index=10)]
     public class ChangesTab : Tab
     {
         private FileViewer unstagedFileViewer;
@@ -14,8 +14,8 @@ namespace GitGud.UI
         private List<GitFile> unstagedFiles;
         private List<GitFile> stagedFiles;
 
-        private List<PathContextOption> stagedContextOptions;
-        private List<PathContextOption> unstagedContextOptions;
+        private List<ContextOption<string>> stagedContextOptions;
+        private List<ContextOption<string>> unstagedContextOptions;
 
         private string commitText;
         private bool autoPush = true;
@@ -43,7 +43,7 @@ namespace GitGud.UI
 
         }
 
-        public override void Render(EditorWindow window)
+        public override void Render(GitGudWindow window)
         {
             //Error render
             if(error)
@@ -72,7 +72,7 @@ namespace GitGud.UI
 
         private void RenderUnstageButtons()
         {
-            bool noneSelected = (stagedFileViewer.GetSelectedPaths().Length == 0);
+            bool noneSelected = (stagedFileViewer.GetSelectedPaths().Count == 0);
             bool noFiles = (stagedFiles.Count == 0);
 
             EditorGUILayout.BeginHorizontal();
@@ -104,7 +104,7 @@ namespace GitGud.UI
 
         private void RenderStageButtons()
         {
-            bool noneSelected = (unstagedFileViewer.GetSelectedPaths().Length == 0);
+            bool noneSelected = (unstagedFileViewer.GetSelectedPaths().Count == 0);
             bool noFiles = (unstagedFiles.Count == 0);
 
             EditorGUILayout.BeginHorizontal();
@@ -159,18 +159,18 @@ namespace GitGud.UI
         //Scan attributes for context lists
         private void BuildContextLists()
         {
-            stagedContextOptions = new List<PathContextOption>();
-            unstagedContextOptions = new List<PathContextOption>();
+            stagedContextOptions = new List<ContextOption<string>>();
+            unstagedContextOptions = new List<ContextOption<string>>();
 
-            GitUtility.ForEachTypeWith<PathContextAttribute>(true, (type, attribute) =>
+            GitUtility.ForEachTypeWithOrdered<PathContextAttribute>(true, (type, attribute) =>
             {
-                if ((attribute.mode & FilePathModes.Staged) == FilePathModes.Staged)
-                    stagedContextOptions.Add((PathContextOption)Activator.CreateInstance(type));
+                if ((attribute.mode & FilePathMode.Staged) == FilePathMode.Staged)
+                    stagedContextOptions.Add((ContextOption<string>)Activator.CreateInstance(type));
 
-                if ((attribute.mode & FilePathModes.Unstaged) == FilePathModes.Unstaged)
-                    unstagedContextOptions.Add((PathContextOption)Activator.CreateInstance(type));
-
+                if ((attribute.mode & FilePathMode.Unstaged) == FilePathMode.Unstaged)
+                    unstagedContextOptions.Add((ContextOption<string>)Activator.CreateInstance(type));
             });
+
         }
 
         private void Commit()

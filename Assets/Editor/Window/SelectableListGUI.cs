@@ -40,57 +40,58 @@ namespace GitGud.UI
 
                 if (pressed)
                 {
-                    //Selection
-                    if (Event.current.button == 0)
+
+                    //Select multiple - in between (shift) mode, only left click
+                    if (Event.current.shift && selectedObjects.Count != 0 && allowMultiple && Event.current.button == 0)
                     {
-                        //Select multiple - in between (shift) mode
-                        if (Event.current.shift && selectedObjects.Count != 0 && allowMultiple)
-                        {
-                            int startIndex = allObjects.IndexOf(selectedObjects[selectedObjects.Count - 1]);
-                            int stopIndex = allObjects.IndexOf(obj);
+                        int startIndex = allObjects.IndexOf(selectedObjects[selectedObjects.Count - 1]);
+                        int stopIndex = allObjects.IndexOf(obj);
 
-                            //TODO: Replace double for loop with a multidirectional one somehow
-                            if (startIndex < stopIndex)
-                            {
-                                for (int i = startIndex + 1; i <= stopIndex; i++)
-                                {
-                                    //Toggle file
-                                    if (selectedObjects.Contains(allObjects[i]))
-                                        selectedObjects.Remove(allObjects[i]);
-                                    else
-                                        selectedObjects.Add(allObjects[i]);
-                                }
-                            }
-                            else if (startIndex > stopIndex)
-                            {
-                                for (int i = stopIndex; i < startIndex; i++)
-                                {
-                                    //Toggle file
-                                    if (selectedObjects.Contains(allObjects[i]))
-                                        selectedObjects.Remove(allObjects[i]);
-                                    else
-                                        selectedObjects.Add(allObjects[i]);
-                                }
-                            }
-
-                        }
-                        else if (Event.current.control && allowMultiple)
+                        //TODO: Replace double for loop with a multidirectional one somehow
+                        if (startIndex < stopIndex)
                         {
-                            //Toggle Selected
-                            if (selectedObjects.Contains(obj))
-                                selectedObjects.Remove(obj);
-                            else
-                                selectedObjects.Add(obj);
+                            for (int i = startIndex + 1; i <= stopIndex; i++)
+                            {
+                                //Toggle file
+                                if (selectedObjects.Contains(allObjects[i]))
+                                    selectedObjects.Remove(allObjects[i]);
+                                else
+                                    selectedObjects.Add(allObjects[i]);
+                            }
                         }
-                        else
+                        else if (startIndex > stopIndex)
                         {
-                            //Select file
-                            selectedObjects = new List<T> { obj };
+                            for (int i = stopIndex; i < startIndex; i++)
+                            {
+                                //Toggle file
+                                if (selectedObjects.Contains(allObjects[i]))
+                                    selectedObjects.Remove(allObjects[i]);
+                                else
+                                    selectedObjects.Add(allObjects[i]);
+                            }
                         }
 
                     }
+                    //Select multiple, one at a time, only left click
+                    else if (Event.current.control && allowMultiple && Event.current.button == 0)
+                    {
+                        //Toggle Selected
+                        if (selectedObjects.Contains(obj))
+                            selectedObjects.Remove(obj);
+                        else
+                            selectedObjects.Add(obj);
+                    }
 
-                    //On click
+                    //Normal selection
+                    else if(!Event.current.control && !Event.current.shift)
+                    {
+                        //Toggle Selected
+                        if(Event.current.button == 0 || !selectedObjects.Contains(obj))
+                            selectedObjects = new List<T>() { obj };
+
+                    }
+
+                    //On click event
                     if(onClick != null)
                     {
                         onClick(selectedObjects, Event.current.button);
