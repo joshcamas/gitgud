@@ -15,12 +15,16 @@ A simple unity-based git client with a focus on extendability
 * Redesign Error catching
 * Pushing / Pulling
 * Better interface
+* Commit log hooks
+* Topbar hooks
 
 ### Wanted Features Someday
 * Branching
 * LFS locking
 * Merge conflict resolvers
 * Plugin API
+* File tree visual
+* File tree filters
 
 ## Attribute Hooks
 There are currently 2 ways to hook into GitGud:
