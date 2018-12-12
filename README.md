@@ -30,21 +30,25 @@ There are currently 4 ways to hook into GitGud:
 **PathContext:**
 
 Adds a context option to specific fileviewers. (Currently staged and unstaged)
+
 <img src="https://i.imgur.com/KmGtJix.png">
  
 **CommitContext:**
 
 Adds a context option to a specific commit list (Currently history only)
+
 <img src="https://i.imgur.com/DYwZUsD.png">
 
 **Tab:**
 
 Adds a tab to the GitGud window.
+
 <img src="https://i.imgur.com/3gQt4Ip.png">
          
 **TopButton:**
 
 Adds a button to the top bar in the GitGud window.
+
 <img src="https://i.imgur.com/wKpw5Rh.png">
 
 ***Documentation to come soon***
