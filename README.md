@@ -15,8 +15,6 @@ A simple unity-based git client with a focus on extendability
 * Redesign Error catching
 * Pushing / Pulling
 * Better interface
-* Commit log hooks
-* Topbar hooks
 
 ### Wanted Features Someday
 * Branching
@@ -27,13 +25,19 @@ A simple unity-based git client with a focus on extendability
 * File tree filters
 
 ## Attribute Hooks
-There are currently 2 ways to hook into GitGud:
+There are currently 4 ways to hook into GitGud:
 
-**PathContext**
-Adds a context option to specific fileviewers.
+**PathContext:**
+Adds a context option to specific fileviewers. (Currently staged and unstaged)
 
-**Tab**
+**Tab:**
 Adds a tab to the GitGud window.
+
+**CommitContext:**
+Adds a context option to a specific commit list (Currently history only)
+
+**TopButton:**
+Adds a button to the top bar in the GitGud window.
 
 ***Documentation to come soon***
 
