@@ -8,11 +8,12 @@ A simple unity-based git client with a focus on extendability
 * Stage / Unstage
 * Icons
 * Attribute-based hooks
+* Basic commit history
+* Committing
 
 ### Features Coming Soon
-* History
-* Error catching
-* Commit / Push
+* Redesign Error catching
+* Pushing / Pulling
 * Better interface
 
 ### Wanted Features Someday
