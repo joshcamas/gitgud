@@ -22,6 +22,9 @@ namespace GitGud.UI
             string projectPath = EditorGUILayout.TextField("Repo Path", GitGudSettings.GetString("repo_path"));
             GitGudSettings.SetString("repo_path", projectPath);
 
+            bool debug = EditorGUILayout.Toggle("Debug Mode", GitGudSettings.GetBool("debug"));
+            GitGudSettings.SetBool("debug", debug);
+
             if (GUILayout.Button("Reset to Default", GUILayout.ExpandWidth(false)))
                 GitGudSettings.ApplyDefaultSettings();
         }

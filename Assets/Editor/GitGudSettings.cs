@@ -19,6 +19,9 @@ namespace GitGud
 
             //Default project path is just up two folders, why not
             EditorPrefs.SetString(BuildPreferenceKey("repo_path"), Path.GetFullPath(Path.Combine(Application.dataPath, @"..\..\")));
+
+            //Default git executable location
+            EditorPrefs.SetBool(BuildPreferenceKey("debug"), false);
         }
 
         public static bool HasKey(string key)

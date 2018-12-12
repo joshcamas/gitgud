@@ -11,8 +11,8 @@ namespace GitGud.UI
         private FileViewer unstagedFileViewer;
         private FileViewer stagedFileViewer;
 
-        private GitFile[] unstagedFiles;
-        private GitFile[] stagedFiles;
+        private List<GitFile> unstagedFiles;
+        private List<GitFile> stagedFiles;
 
         private List<PathContextOption> stagedContextOptions;
         private List<PathContextOption> unstagedContextOptions;
@@ -73,7 +73,7 @@ namespace GitGud.UI
         private void RenderUnstageButtons()
         {
             bool noneSelected = (stagedFileViewer.GetSelectedPaths().Length == 0);
-            bool noFiles = (stagedFiles.Length == 0);
+            bool noFiles = (stagedFiles.Count == 0);
 
             EditorGUILayout.BeginHorizontal();
 
@@ -82,7 +82,7 @@ namespace GitGud.UI
 
             if (GUILayout.Button("Unstage Selected", GUILayout.ExpandWidth(false)))
             {
-                GitUtility.UnstagePaths(stagedFileViewer.GetSelectedPaths(), null);
+                GitCore.UnstagePaths(stagedFileViewer.GetSelectedPaths(), null);
                 Scan();
             }
 
@@ -93,7 +93,7 @@ namespace GitGud.UI
 
             if (GUILayout.Button("Unstage All", GUILayout.ExpandWidth(false)))
             {
-                GitUtility.UnstagePaths(GitFile.GetPaths(stagedFiles), null);
+                GitCore.UnstagePaths(GitFile.GetPaths(stagedFiles), null);
                 Scan();
             }
 
@@ -105,7 +105,7 @@ namespace GitGud.UI
         private void RenderStageButtons()
         {
             bool noneSelected = (unstagedFileViewer.GetSelectedPaths().Length == 0);
-            bool noFiles = (unstagedFiles.Length == 0);
+            bool noFiles = (unstagedFiles.Count == 0);
 
             EditorGUILayout.BeginHorizontal();
 
@@ -114,7 +114,7 @@ namespace GitGud.UI
 
             if (GUILayout.Button("Stage Selected", GUILayout.ExpandWidth(false)))
             {
-                GitUtility.StagePaths(unstagedFileViewer.GetSelectedPaths(), null);
+                GitCore.StagePaths(unstagedFileViewer.GetSelectedPaths(), null);
                 Scan();
             }
 
@@ -125,7 +125,7 @@ namespace GitGud.UI
 
             if (GUILayout.Button("Stage All", GUILayout.ExpandWidth(false)))
             {
-                GitUtility.StagePaths(GitFile.GetPaths(unstagedFiles), null);
+                GitCore.StagePaths(GitFile.GetPaths(unstagedFiles), null);
                 Scan();
             }
 
@@ -136,18 +136,21 @@ namespace GitGud.UI
 
         private void RenderCommitSection()
         {
-            
-
             commitText = EditorGUILayout.TextArea(commitText,GUILayout.MinHeight(50));
 
             EditorGUILayout.BeginHorizontal();
 
-            if (GUILayout.Button("Commit", GUILayout.ExpandWidth(false)))
-            {
+            bool stageEmpty = (stagedFiles.Count == 0);
 
-            }
+            //Do not allow committing if there is nothing to stage
+            EditorGUI.BeginDisabledGroup(stageEmpty);
+
+            if (GUILayout.Button("Commit", GUILayout.ExpandWidth(false)))
+                Commit();
 
             autoPush = EditorGUILayout.Toggle("Push changes automatically", autoPush);
+
+            EditorGUI.EndDisabledGroup();
 
             EditorGUILayout.EndHorizontal();
 
@@ -170,12 +173,43 @@ namespace GitGud.UI
             });
         }
 
+        private void Commit()
+        {
+            //Commit!
+            GitCore.Commit(commitText, (output) =>
+            {
+                //Error
+                if (output.errorData != null)
+                {
+                    Debug.LogError(output.errorData);
+                    return;
+                }
+
+                //Auto push
+                if (autoPush)
+                    AutoPush();
+            });
+        }
+
+        private void AutoPush()
+        {
+            GitCore.Push(false, (output) =>
+            {
+                //Error
+                if (output.errorData != null)
+                {
+                    Debug.LogError(output.errorData);
+                    return;
+                }
+            });
+        }
+
         /// <summary>
         /// Scans the status of the local repo, and renders it
         /// </summary>
         private void Scan()
         {
-            GitUtility.Status(true,
+            GitCore.Status(true,
                 (commandOutput) =>
                 {
                     //Error catch
@@ -207,13 +241,11 @@ namespace GitGud.UI
         /// </summary>
         private void BuildStageLists(string status)
         {
-            //Convert string status into readable file names and statuses
-            List<GitFile> unstagedFileList = new List<GitFile>();
-            List<GitFile> stagedFileList = new List<GitFile>();
+            stagedFiles = new List<GitFile>();
+            unstagedFiles = new List<GitFile>();
 
             //Read status code, more info here:
             //https://www.git-scm.com/docs/git-status/1.8.5
-
             foreach (string s in status.Split('\n'))
             {
                 //Skip any non important lines
@@ -240,23 +272,17 @@ namespace GitGud.UI
                     stagedStatus != FileStatus.ignored &&
                     stagedStatus != FileStatus.untracked)
                 {
-                    stagedFileList.Add(new GitFile(filepathA, stagedStatus));
+                    stagedFiles.Add(new GitFile(filepathA, stagedStatus));
                 }
 
                 //Unstage
                 if (unstagedStatus != FileStatus.unmodified &&
                     unstagedStatus != FileStatus.ignored)
                 {
-                    unstagedFileList.Add(new GitFile(filepathB, unstagedStatus));
+                    unstagedFiles.Add(new GitFile(filepathB, unstagedStatus));
                 }
-
-
             }
-
-            unstagedFiles = unstagedFileList.ToArray();
-            stagedFiles = stagedFileList.ToArray();
         }
-
 
         /// <summary>
         /// Window error hook

@@ -6,75 +6,9 @@ using UnityEngine;
 
 namespace GitGud
 {
+    //Helper functions
     public class GitUtility
     {
-        /// <summary>
-        /// Returns 0 for success, 1 for incorrect / missing git executable, and 2 for incorrect / missing git repo
-        /// </summary>
-        /// <returns></returns>
-        public static int GitState()
-        {
-            return 0;
-        }
-
-        public static void AddFile(string filename, Action<CommandOutput> onComplete)
-        {
-            GitGudtCore.RunCommand("add " + filename, onComplete);
-        }
-
-        public static void Status(bool shortMode,Action<CommandOutput> onComplete)
-        {
-            if(shortMode)
-                GitGudtCore.RunCommand("status -s --untracked-files=all", onComplete);
-            else
-                GitGudtCore.RunCommand("status", onComplete);
-        }
-
-        //Stage a list of paths
-        public static void StagePaths(string[] paths, Action<CommandOutput> onComplete)
-        {
-            if (paths.Length == 0)
-            {
-                //TODO: commandoutput is never outputted correctly here
-                if(onComplete != null)
-                    onComplete(new CommandOutput());
-                return;
-            }
-                
-            StagePath(paths[0], (output) =>
-            {
-                StagePaths(paths.Skip(1).ToArray(), onComplete);
-            });
-        }
-
-        //Unstage a list of paths
-        public static void UnstagePaths(string[] paths, Action<CommandOutput> onComplete)
-        {
-            if (paths.Length == 0)
-            {
-                //TODO: commandoutput is never outputted correctly here
-                if (onComplete != null)
-                    onComplete(new CommandOutput());
-                return;
-            }
-
-            UnstagePath(paths[0], (output) =>
-            {
-                UnstagePaths(paths.Skip(1).ToArray(), onComplete);
-            });
-        }
-
-        //Stage a single path
-        public static void StagePath(string path, Action<CommandOutput> onComplete)
-        {
-            GitGudtCore.RunCommand("add " + path, onComplete);
-        }
-
-        //Unstage a single path
-        public static void UnstagePath(string path, Action<CommandOutput> onComplete)
-        {
-            GitGudtCore.RunCommand("reset -- " + path, onComplete);
-        }
 
         //Converts a path relative to the repo to an absolute path
         public static string RepoPathToAbsolutePath(string repoPath)
@@ -97,9 +31,9 @@ namespace GitGud
         /// <summary>
         /// Helper function that runs a function for every type that has a certain attribute
         /// </summary>
-        public static void ForEachTypeWith<TAttribute>(bool inherit,Action<Type, TAttribute> function) where TAttribute : System.Attribute
+        public static void ForEachTypeWith<TAttribute>(bool inherit, Action<Type, TAttribute> function) where TAttribute : System.Attribute
         {
-            foreach(Type type in GetTypesWith<TAttribute>(inherit))
+            foreach (Type type in GetTypesWith<TAttribute>(inherit))
             {
                 TAttribute attribute =
                     type.GetCustomAttributes(typeof(TAttribute), true).FirstOrDefault() as TAttribute;
@@ -120,6 +54,6 @@ namespace GitGud
                    select t;
         }
 
-
     }
+
 }

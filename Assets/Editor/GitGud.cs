@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GitGud
 {
-    public class GitGudtCore
+    public class GitGud
     {
         /// <summary>
         /// Run a git command, streaming onError events as they happen, and running onComplete 
@@ -18,6 +18,9 @@ namespace GitGud
             string outputData = null;
             string errorData = null;
 
+            if(GitGudSettings.GetBool("debug"))
+                UnityEngine.Debug.Log("Running command " + command);
+
             RunCommandAsync(command, 
                 (output) => {
 
@@ -28,15 +31,14 @@ namespace GitGud
                             outputData = output;
                         else
                             outputData += "\n" + output;
+
                     }
                 }, 
                 
                 (error) => {
-
                     //Error stream
-                    if (errorData != null)
+                    if (error != null)
                     {
-                        UnityEngine.Debug.Log("!!!");
                         if (errorData == null)
                             errorData = error;
                         else
@@ -45,6 +47,13 @@ namespace GitGud
                 },
                 () =>
                 {
+                    //Debugging
+                    if (GitGudSettings.GetBool("debug") && outputData != null)
+                        UnityEngine.Debug.Log("<color=blue>Output:</color>" + outputData);
+
+                    if (GitGudSettings.GetBool("debug") && errorData != null)
+                        UnityEngine.Debug.Log("<color=red>Error:</color>" + errorData);
+
                     CommandOutput output = new CommandOutput(outputData, errorData);
                     if(onComplete != null)
                         onComplete(output);
@@ -83,6 +92,7 @@ namespace GitGud
             {
                 //Run process
                 gitProcess.Start();
+
                 gitProcess.BeginOutputReadLine();
                 gitProcess.BeginErrorReadLine();
 
@@ -91,8 +101,7 @@ namespace GitGud
 
             } catch
             {
-                //TODO: Have actual error catching, jeez
-                onError("Process Failed");
+                onError("Process for command " + command + " failed");
             }
 
             onComplete();

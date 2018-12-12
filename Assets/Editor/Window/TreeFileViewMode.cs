@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ namespace GitGud.UI
     {
         private Vector2 scrollPosition;
 
-        public override void Render(GitFile[] files)
+        public override void Render(List<GitFile> files)
         {
             EditorGUILayout.BeginScrollView(scrollPosition);
 

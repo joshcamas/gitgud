@@ -33,7 +33,7 @@ namespace GitGud
 
         private void ReadStatus(bool shortMode)
         {
-            GitUtility.Status(shortMode,(output) =>
+            GitCore.Status(shortMode,(output) =>
             {
                 outputString += output.outputData;
 
@@ -82,7 +82,7 @@ namespace GitGud
 
             if (GUILayout.Button("Execute", GUILayout.ExpandWidth(false)))
             {
-                GitGudtCore.RunCommand(commandString,
+                GitGud.RunCommand(commandString,
                 (output) =>
                 {
                     if (output.outputData != null)

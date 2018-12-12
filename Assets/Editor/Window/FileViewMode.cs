@@ -18,7 +18,7 @@ namespace GitGud.UI
         }
 
         //Renders the viewer
-        public virtual void Render(GitFile[] files)
+        public virtual void Render(List<GitFile> files)
         {
 
         }

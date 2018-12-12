@@ -36,7 +36,7 @@ namespace GitGud.UI
                 viewMode.Init(this.contextOptions);
         }
 
-        public void Render(GitFile[] files)
+        public void Render(List<GitFile> files)
         {
             EditorGUILayout.LabelField(title, EditorStyles.boldLabel);
 
