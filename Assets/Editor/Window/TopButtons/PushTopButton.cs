@@ -8,21 +8,48 @@ namespace GitGud.UI
     [TopButton(index = 30)]
     public class PushTopButton : TopButton
     {
+        int pushCount = -1;
+
+        //Scan for pushes
+        public override void OnCreate()
+        {
+            Refresh();
+        }
+
+        public override void Refresh()
+        {
+            GitCore.Log("@{push}..", (output, commits) =>
+            {
+                if (output.errorData != null)
+                    return;
+
+                pushCount = commits.Count;
+            });
+        }
+
         public override string GetName()
         {
-            return "Push";
+            if(pushCount < 1)
+                return "Push";
+
+            return "Push (" + pushCount + ")";
         }
 
         public override bool IsDisabled()
         {
-            //Always disabled for now
-            return true;
+            if (pushCount < 1)
+                return true;
+
+            return false;
         }
 
         //Run when button is clicked
         public override void OnClick(GitGudWindow window)
         {
-
+            GitCore.Push(true, (output) =>
+            {
+                GitGudWindow.PlanRefresh();
+            });
         }
 
     }

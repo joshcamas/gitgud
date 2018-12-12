@@ -17,12 +17,21 @@ namespace GitGud.UI
 
         private List<TopButton> topButtons;
 
+        private static bool planningRefresh = false;
+
+
         //Window creation
         [MenuItem("GitGud/GitGud")]
         public static void ShowWindow()
         {
             //Show existing window instance. If one doesn't exist, make one.
             GitGudWindow.GetWindow(typeof(GitGudWindow), false, "GitGud");
+        }
+
+        //Used to plan a refresh after rendering current frame
+        public static void PlanRefresh()
+        {
+            planningRefresh = true;
         }
 
         //Scan for tab attributes
@@ -45,9 +54,11 @@ namespace GitGud.UI
             {
                 TopButton button = (TopButton)Activator.CreateInstance(type);
                 button.flexibleSpaceAfter = attribute.flexibleSpaceAfter;
+                button.OnCreate();
                 topButtons.Add(button);
             });
         }
+
 
         private void OnEnable()
         {
@@ -60,6 +71,19 @@ namespace GitGud.UI
 
         }
 
+        //Triggers a refresh on all gui elements
+        void Refresh()
+        {
+            //Top buttons
+            foreach(TopButton button in topButtons)
+            {
+                button.Refresh();
+            }
+
+            //Current tab
+            tabs[selectedTab].Refresh();
+        }
+
         void OnGUI()
         {
             RenderTopBar();
@@ -69,6 +93,11 @@ namespace GitGud.UI
             if (tabs.Count > 0)
                 tabs[selectedTab].Render(this);
 
+            if(planningRefresh)
+            {
+                Refresh();
+                planningRefresh = false;
+            }
         }
 
         private void RenderTopBar()

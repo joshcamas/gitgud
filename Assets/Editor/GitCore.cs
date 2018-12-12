@@ -36,6 +36,12 @@ namespace GitGud
 
                 List<Commit> commits = new List<Commit>();
 
+                if (output.outputData == null)
+                {
+                    onComplete(output, commits);
+                    return;
+                }
+
                 //Convert log string into commit format
                 string[] commitStrings = output.outputData.Split('\n');
 
@@ -139,6 +145,18 @@ namespace GitGud
                 GitGud.RunCommand("push --all", onComplete);
             else
                 GitGud.RunCommand("push", onComplete);
+        }
+
+        //Simple pull command
+        public static void Pull(Action<CommandOutput> onComplete)
+        {
+            GitGud.RunCommand("pull", onComplete);
+        }
+
+        //Simple fetch command
+        public static void Fetch(Action<CommandOutput> onComplete)
+        {
+            GitGud.RunCommand("fetch", onComplete);
         }
 
         public static void Commit(string message, Action<CommandOutput> onComplete)

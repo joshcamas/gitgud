@@ -9,6 +9,16 @@ namespace GitGud.UI
     {
         public bool flexibleSpaceAfter = false;
 
+        public virtual void OnCreate()
+        {
+
+        }
+
+        public virtual void Refresh()
+        {
+
+        }
+
         public virtual string GetName()
         {
             return "Top Button";

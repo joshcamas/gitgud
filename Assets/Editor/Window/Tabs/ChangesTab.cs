@@ -69,6 +69,10 @@ namespace GitGud.UI
             RenderCommitSection();
         }
 
+        public override void Refresh()
+        {
+            Scan();
+        }
 
         private void RenderUnstageButtons()
         {
@@ -188,19 +192,26 @@ namespace GitGud.UI
                 //Auto push
                 if (autoPush)
                     AutoPush();
+                else
+                    //Trigger a refresh
+                    GitGudWindow.PlanRefresh();
             });
         }
 
         private void AutoPush()
         {
-            GitCore.Push(false, (output) =>
+            GitCore.Push(true, (output) =>
             {
+                //Trigger a refresh
+                GitGudWindow.PlanRefresh();
+
                 //Error
                 if (output.errorData != null)
                 {
                     Debug.LogError(output.errorData);
                     return;
                 }
+
             });
         }
 
