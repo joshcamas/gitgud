@@ -40,7 +40,7 @@ Adds a context option to a specific commit list (Currently history only)
 **Tab:**
 
 Adds a tab to the GitGud window.
-<img src="https://i.imgur.com/3gQt4Ip.png>
+<img src="https://i.imgur.com/3gQt4Ip.png">
          
 **TopButton:**
 
