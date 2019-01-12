@@ -11,9 +11,10 @@ A simple unity-based git client with a focus on extendability
 * Basic commit history
 * Committing
 * Stashing
-* Discard All / Reset 
+* Discard all / Reset 
 * Push
-* View Stashes
+* View stashes
+* Checkout specific commit
 
 ### Features Coming Soon
 * Redesign Error catching
