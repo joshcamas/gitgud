@@ -10,10 +10,13 @@ A simple unity-based git client with a focus on extendability
 * Attribute-based hooks
 * Basic commit history
 * Committing
+* Stashing
+* Discard All / Reset 
+* Push
+* View Stashes
 
 ### Features Coming Soon
 * Redesign Error catching
-* Pushing / Pulling
 * Better interface
 
 ### Wanted Features Someday
