@@ -27,6 +27,7 @@ A simple unity-based git client with a focus on extendability
 * Plugin API
 * File tree visual
 * File tree filters
+* Async!! 
 
 ## Attribute Hooks
 There are currently 4 ways to hook into GitGud:
