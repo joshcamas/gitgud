@@ -22,7 +22,6 @@ namespace GitGud.UI
             Dictionary<string, Type> viewModes = new Dictionary<string, Type>();
 
             viewModes.Add("List", typeof(ListFileViewMode));
-            viewModes.Add("Tree", typeof(TreeFileViewMode));
 
             return viewModes;
         }
@@ -81,6 +80,10 @@ namespace GitGud.UI
             {
                 SelectViewMode(GetFileModes().First().Value);
             }
+
+            //Don't display selection if there isn't at least two options
+            if (GetFileModes().Count < 2)
+                return;
 
             EditorGUILayout.BeginHorizontal();
 

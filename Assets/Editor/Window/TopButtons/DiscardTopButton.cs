@@ -15,16 +15,48 @@ namespace GitGud.UI
 
         public override bool IsDisabled()
         {
-            //Always disabled for now
-            return true;
+            return false;
         }
 
         //Run when button is clicked
         public override void OnClick(GitGudWindow window)
         {
-
+            GenericMenu menu = new GenericMenu();
+            menu.AddDisabledItem(new GUIContent("Discard..."));
+            menu.AddItem(new GUIContent("Discard All Unstaged"), false, DiscardUnstaged);
+            menu.AddItem(new GUIContent("Reset Local Repo"), false, Reset);
+            menu.ShowAsContext();
         }
 
+        private void DiscardUnstaged()
+        {
+            bool discard = EditorUtility.DisplayDialog("Warning", "This will discard all unstaged changes - is this okay?", "Discard", "Cancel");
+
+            if (!discard)
+                return;
+
+            GitCore.DiscardAll((output) =>
+            {
+                GitGudWindow.PlanRefresh();
+                AssetDatabase.Refresh();
+            });
+        }
+
+        private void Reset()
+        {
+            bool reset = EditorUtility.DisplayDialog("Warning", "This will reset the entire local repository - is this okay?", "Reset", "Cancel");
+
+            if (!reset)
+                return;
+
+            //Clean and reset
+            GitGud.RunCommands(new string[]{ "clean -f -d", "reset --hard"}, (outputs) =>
+            {
+                GitGudWindow.PlanRefresh();
+                AssetDatabase.Refresh();
+            });
+
+        }
     }
 
 }

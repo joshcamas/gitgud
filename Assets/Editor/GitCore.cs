@@ -8,10 +8,33 @@ namespace GitGud
     //Core functions
     public class GitCore
     {
+        public static void DiscardFiles(List<string> paths, Action<CommandOutput> onComplete)
+        {
+            string combinedPaths = GitUtility.QuoteAndCombinePaths(paths.ToArray());
+
+            GitGud.RunCommand("checkout " + combinedPaths, onComplete);
+
+        }
+
+        public static void DiscardFile(string path,Action<CommandOutput> onComplete)
+        {
+            GitGud.RunCommand("checkout -- " + path, onComplete);
+        }
+        
+        public static void DiscardAll(Action<CommandOutput> onComplete)
+        {
+            GitGud.RunCommand("checkout .", onComplete);
+        }
 
         public static void AddFile(string filename, Action<CommandOutput> onComplete)
         {
             GitGud.RunCommand("add " + filename, onComplete);
+        }
+
+        public static void CheckoutCommit(Commit commit, Action<CommandOutput> onComplete)
+        {
+            GitGud.RunCommand("checkout " + commit.hash + " .", onComplete);
+
         }
 
         public static void Status(bool shortMode, Action<CommandOutput> onComplete)
@@ -86,18 +109,6 @@ namespace GitGud
                 GitGud.RunCommand("log --pretty=\"" + format + "\" " + filter, onLogComplete);
         }
 
-        //Stage a list of paths
-        public static void StagePaths(List<string> paths, Action<CommandOutput> onComplete)
-        {
-            StagePath(string.Join(" ", paths.ToArray()), onComplete);
-        }
-
-        //Unstage a list of paths
-        public static void UnstagePaths(List<string> paths, Action<CommandOutput> onComplete)
-        {
-            UnstagePath(string.Join(" ", paths.ToArray()), onComplete);
-        }
-
         //Returns list of stashes, in order by index
         //Returned stash is in form "branch:message"
         public static void ListStash(Action<CommandOutput, List<string>> onComplete)
@@ -132,7 +143,7 @@ namespace GitGud
         //Create a new stash
         public static void PushStash(string message, Action<CommandOutput> onComplete)
         {
-            if (message == "")
+            if (message == "" || message == null)
                 GitGud.RunCommand("stash push", onComplete);
             else
                 GitGud.RunCommand("stash push --message=\"" + message + "\"", onComplete);
@@ -166,17 +177,33 @@ namespace GitGud
             else
                 GitGud.RunCommand("commit --message=\"" + message + "\"", onComplete);
         }
+        
+        //Stage a list of paths
+        public static void StagePaths(List<string> paths, Action<CommandOutput> onComplete)
+        {
+            string combinedPaths = GitUtility.QuoteAndCombinePaths(paths.ToArray());
+
+            GitGud.RunCommand("add " + combinedPaths, onComplete);
+        }
+
+        //Unstage a list of paths
+        public static void UnstagePaths(List<string> paths, Action<CommandOutput> onComplete)
+        {
+            string combinedPaths = GitUtility.QuoteAndCombinePaths(paths.ToArray());
+
+            GitGud.RunCommand("reset -- " + combinedPaths, onComplete);
+        }
 
         //Stage a single path
         public static void StagePath(string path, Action<CommandOutput> onComplete)
         {
-            GitGud.RunCommand("add " + path, onComplete);
+            GitGud.RunCommand("add \"" + path + "\"", onComplete);
         }
 
         //Unstage a single path
         public static void UnstagePath(string path, Action<CommandOutput> onComplete)
         {
-            GitGud.RunCommand("reset -- " + path, onComplete);
+            GitGud.RunCommand("reset -- \"" + path + "\"", onComplete);
         }
 
 

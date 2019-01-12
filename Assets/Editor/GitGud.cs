@@ -7,8 +7,26 @@ namespace GitGud
     public class GitGud
     {
         /// <summary>
-        /// Run a git command, streaming onError events as they happen, and running onComplete 
-        /// when process completes.
+        /// Run an array of commands, one after the other, then finally run OnComplete when process completes
+        /// </summary>
+        /// <param name="commands"></param>
+        /// <param name="onComplete"></param>
+        public static void RunCommands(string[] commands, Action<CommandOutput[]> onComplete)
+        {
+            CommandOutput[] outputs = new CommandOutput[commands.Length];
+
+            //TODO: This super hacky loop relies on the fact that RunCommand is NOT async!!!
+            //BAD
+            for (int i =0;i<commands.Length;i++)
+            {
+                RunCommand(commands[i], (output) => { outputs[i] = output; });
+            }
+
+            onComplete(outputs);
+        }
+
+        /// <summary>
+        /// Run a git command, running onComplete when process completes.
         /// </summary>
         /// <param name="command"></param>
         /// <param name="onComplete"></param>
@@ -21,7 +39,7 @@ namespace GitGud
             if(GitGudSettings.GetBool("debug"))
                 UnityEngine.Debug.Log("Running command " + command);
 
-            RunCommandAsync(command, 
+            RunCommandInternal(command, 
                 (output) => {
 
                     //Output stream
@@ -39,6 +57,13 @@ namespace GitGud
                     //Error stream
                     if (error != null)
                     {
+                        //Special case: Stop line endings error
+                        if (error.Contains("LF will be replaced by CRLF"))
+                            return;
+
+                        if (error.Contains("The file will have its original line endings in your working directory"))
+                            return;
+
                         if (errorData == null)
                             errorData = error;
                         else
@@ -68,7 +93,7 @@ namespace GitGud
         /// <param name="command"></param>
         /// <param name="onComplete"></param>
         /// <param name="onError"></param>
-        public static void RunCommandAsync(string command, Action<string> onOutput, Action<string> onError, Action onComplete)
+        public static void RunCommandInternal(string command, Action<string> onOutput, Action<string> onError, Action onComplete)
         {
             //Start info
             ProcessStartInfo gitInfo = new ProcessStartInfo();

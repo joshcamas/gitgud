@@ -9,6 +9,43 @@ namespace GitGud
     //Helper functions
     public class GitUtility
     {
+        public static void Log(string log)
+        {
+            UnityEngine.Debug.Log("<color=blue>GitGud:</color> " + log);
+        }
+
+        public static void LogWarning(string log)
+        {
+            UnityEngine.Debug.LogWarning("<color=blue>GitGud:</color> " + log);
+        }
+
+        public static void LogError(string log)
+        {
+            UnityEngine.Debug.LogError("<color=blue>GitGud:</color> " + log);
+        }
+        
+        public static string QuoteAndCombinePaths(string[] paths)
+        {
+            return string.Join(" ", QuotePaths(paths));
+        }
+
+        //Wrap quotes to a array of paths
+        public static string[] QuotePaths(string[] paths)
+        {
+            string[] quotedPaths = new string[paths.Length];
+
+            //Add quotes around each path
+            for (int i = 0; i < paths.Length; i++)
+            {
+                bool startQuoted = paths[i][0] == '"';
+                bool endQuoted = paths[i][paths[i].Length-1] == '"';
+
+                if (!startQuoted || !endQuoted)
+                    quotedPaths[i] = "\"" + paths[i] + "\"";
+            }
+                
+            return quotedPaths;
+        }
 
         //Converts a path relative to the repo to an absolute path
         public static string RepoPathToAbsolutePath(string repoPath)

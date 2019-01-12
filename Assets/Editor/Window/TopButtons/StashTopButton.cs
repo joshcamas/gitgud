@@ -8,6 +8,8 @@ namespace GitGud.UI
     [TopButton(index = 70)]
     public class StashTopButton : TopButton
     {
+        private StashWindow stashWindow;
+
         public override string GetName()
         {
             return "Stash";
@@ -15,16 +17,28 @@ namespace GitGud.UI
 
         public override bool IsDisabled()
         {
-            //Always disabled for now
-            return true;
+            if (stashWindow != null)
+                return true;
+
+            return false;
         }
 
         //Run when button is clicked
         public override void OnClick(GitGudWindow window)
         {
-
+            stashWindow = StashWindow.ShowWindow(OnFinishStashWindow);
         }
 
+        private void OnFinishStashWindow(string message)
+        {
+            GitGudWindow.DisableInput();
+
+            GitCore.PushStash(message, (output) =>
+            {
+                GitGudWindow.EnableInput();
+                GitGudWindow.PlanRefresh();
+            });
+        }
     }
 
 }

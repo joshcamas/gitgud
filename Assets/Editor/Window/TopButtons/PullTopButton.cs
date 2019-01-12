@@ -5,7 +5,7 @@ using System;
 
 namespace GitGud.UI
 {
-    [TopButton(index = 20)]
+    [TopButton(index = 20,flexibleSpaceAfter = true)]
     public class PullTopButton : TopButton
     {
         public override string GetName()

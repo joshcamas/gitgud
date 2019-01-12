@@ -18,10 +18,10 @@ namespace GitGud.UI
         private List<TopButton> topButtons;
 
         private static bool planningRefresh = false;
-
+        private static bool disableInput = false;
 
         //Window creation
-        [MenuItem("GitGud/GitGud")]
+        [MenuItem("Window/GitGud")]
         public static void ShowWindow()
         {
             //Show existing window instance. If one doesn't exist, make one.
@@ -32,6 +32,18 @@ namespace GitGud.UI
         public static void PlanRefresh()
         {
             planningRefresh = true;
+        }
+
+        //Used to enable input for window
+        public static void EnableInput()
+        {
+            disableInput = false;
+        }
+
+        //Used to disable input for window
+        public static void DisableInput()
+        {
+            disableInput = true;
         }
 
         //Scan for tab attributes
@@ -86,6 +98,8 @@ namespace GitGud.UI
 
         void OnGUI()
         {
+            EditorGUI.BeginDisabledGroup(disableInput);
+
             RenderTopBar();
 
             RenderTabBar();
@@ -93,11 +107,19 @@ namespace GitGud.UI
             if (tabs.Count > 0)
                 tabs[selectedTab].Render(this);
 
-            if(planningRefresh)
+            EditorGUI.EndDisabledGroup();
+
+            if (planningRefresh)
             {
-                Refresh();
-                planningRefresh = false;
+                //Only refresh during repaint
+               // if(Event.current.type == EventType.Repaint)
+            //    {
+                    Refresh();
+                    planningRefresh = false;
+            //    }
+                
             }
+
         }
 
         private void RenderTopBar()

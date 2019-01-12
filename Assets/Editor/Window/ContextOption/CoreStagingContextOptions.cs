@@ -31,7 +31,6 @@ namespace GitGud.UI
                 return true;
 
             string absolutePath = GitUtility.RepoPathToAbsolutePath(paths[0]);
-            Debug.Log(absolutePath);
 
             //Disable if file does not exist (ie moved or deleted)
             if (!File.Exists(absolutePath))
@@ -69,6 +68,77 @@ namespace GitGud.UI
             if (GitUtility.RepoPathToRelativeAssetPath(paths[0]) == null)
                 return true;
 
+            return false;
+        }
+    }
+
+    [PathContext(index = 30, mode = FilePathMode.Unstaged)]
+    public class StageSelectedContextOption : ContextOption<string>
+    {
+        public override string GetContextPath()
+        {
+            return "Stage";
+        }
+
+        public override void OnSelect(List<string> paths)
+        {
+            GitCore.StagePaths(paths, (output) =>
+            {
+                GitGudWindow.PlanRefresh();
+            });
+
+        }
+
+    }
+
+    [PathContext(index = 30, mode = FilePathMode.Staged)]
+    public class UnstageSelectedContextOption : ContextOption<string>
+    {
+        public override string GetContextPath()
+        {
+            return "Unstage";
+        }
+
+        public override void OnSelect(List<string> paths)
+        {
+            GitCore.UnstagePaths(paths, (output) =>
+            {
+                GitGudWindow.PlanRefresh();
+            });
+
+        }
+
+    }
+
+    [PathContext(index = 40, mode = FilePathMode.Staged | FilePathMode.Unstaged)]
+    public class DiscardContextOption : ContextOption<string>
+    {
+        //Path of context menu
+        public override string GetContextPath()
+        {
+            return "Discard";
+        }
+
+        //Function run when file context option is clicked
+        public override void OnSelect(List<string> paths)
+        {
+            //Mkae sure all paths are not staged
+            GitCore.UnstagePaths(paths, (unstageUutput) =>
+            {
+                //Discard files   
+                GitCore.DiscardFiles(paths, (discardOutput) =>
+                {
+                    //Refresh
+                    GitGudWindow.PlanRefresh();
+                    AssetDatabase.Refresh(ImportAssetOptions.Default);
+                });
+            });
+
+        }
+
+        //Function to check if this context option is disabled for string path
+        public override bool IsDisabled(List<string> paths)
+        {
             return false;
         }
     }

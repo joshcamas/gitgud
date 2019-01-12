@@ -15,6 +15,7 @@ namespace GitGud.UI
         public void OnEnable(List<ContextOption<Commit>> contextOptions)
         {
             this.contextOptions = contextOptions;
+
         }
 
         public void Render(List<Commit> commits)

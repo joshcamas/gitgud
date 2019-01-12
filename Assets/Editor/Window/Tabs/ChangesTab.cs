@@ -224,24 +224,16 @@ namespace GitGud.UI
                 (commandOutput) =>
                 {
                     //Error catch
-                    if (commandOutput.outputData == null)
+                    if (commandOutput.errorData != null)
                     {
-                        if (commandOutput.errorData != null)
-                        {
-                            Debug.LogError(commandOutput.errorData);
-                            error = true;
-                            errorString = commandOutput.errorData;
-                        } else
-                        {
-                            error = true;
-                            errorString = "Scan failed";
-                        }
+                        Debug.LogError(commandOutput.errorData);
+                        error = true;
+                        errorString = commandOutput.errorData;
+                        return;
                     }
-                    else
-                    {
-                        error = false;
-                        BuildStageLists(commandOutput.outputData);
-                    }
+
+                    error = false;
+                    BuildStageLists(commandOutput.outputData);
 
                 });
         }
@@ -254,6 +246,12 @@ namespace GitGud.UI
         {
             stagedFiles = new List<GitFile>();
             unstagedFiles = new List<GitFile>();
+
+            if (status == null)
+                return;
+
+            //Remove any pesky quotes
+            status = status.Replace("\"", "");
 
             //Read status code, more info here:
             //https://www.git-scm.com/docs/git-status/1.8.5

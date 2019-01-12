@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace GitGud.UI
 {
-    [Tab(index = 30)]
-    public class HistoryTab : Tab
+    [Tab(index = 40)]
+    public class HistoryTab : Tab  
     {
         private List<Commit> commits;
         private CommitListGUI commitList;
