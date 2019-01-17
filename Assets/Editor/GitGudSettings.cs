@@ -22,6 +22,8 @@ namespace GitGud
 
             //Default git executable location
             EditorPrefs.SetBool(BuildPreferenceKey("debug"), false);
+
+            EditorPrefs.SetBool(BuildPreferenceKey("refresh_on_edit"), true);
         }
 
         public static bool HasKey(string key)

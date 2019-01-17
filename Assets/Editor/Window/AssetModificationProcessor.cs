@@ -37,7 +37,11 @@ namespace GitGud.UI
 
         static void OnAssetModify()
         {
+            if (GitGudSettings.GetBool("refresh_on_edit") == false)
+                return;
+
             //Wait for one frame (ugly)
+            EditorApplication.update -= FrameDelay;
             EditorApplication.update += FrameDelay;
         }
 
