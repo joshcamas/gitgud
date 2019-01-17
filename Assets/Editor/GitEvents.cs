@@ -15,12 +15,33 @@ namespace GitGud
         /// </summary>
         public static BaseEvent OnLocalChange;
 
+        /// <summary>
+        /// Triggered when a git command has begun
+        /// </summary>
+        public static BaseEvent OnGitCommandStart;
+
+        /// <summary>
+        /// Triggered when a git command has completed
+        /// </summary>
+        public static BaseEvent OnGitCommandComplete;
+
         public static void TriggerOnLocalChange()
         {
             if (OnLocalChange != null)
                 OnLocalChange();
         }
 
+        public static void TriggerOnGitCommandStart()
+        {
+            if (OnGitCommandStart != null)
+                OnGitCommandStart();
+        }
+
+        public static void TriggerOnGitCommandComplete()
+        {
+            if (OnGitCommandComplete != null)
+                OnGitCommandComplete();
+        }
     }
 
 }

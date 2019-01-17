@@ -65,7 +65,10 @@ namespace GitGud.UI
             if (tabs.Count > 0)
                 tabs[0].OnEnable();
 
+            //Hook onto events
             GitEvents.OnLocalChange += PlanRefresh;
+            GitEvents.OnGitCommandStart += () => { disableInput = true; };
+            GitEvents.OnGitCommandComplete += () => { disableInput = false; };
         }
 
         private void PlanRefresh()

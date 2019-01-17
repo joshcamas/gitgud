@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Diagnostics;
 using UnityEngine;
 
@@ -87,7 +88,7 @@ namespace GitGud
         }
 
         /// <summary>
-        /// Run a git command, with streaming onOutput and onError events as they happen, 
+        /// Asynchronously run a git command, with streaming onOutput and onError events as they happen, 
         /// and then running onComplete when the process completes
         /// </summary>
         /// <param name="command"></param>
@@ -108,29 +109,33 @@ namespace GitGud
             //Process
             Process gitProcess = new Process();
             gitProcess.StartInfo = gitInfo;
+            gitProcess.EnableRaisingEvents = true;
 
             //Hook events
             gitProcess.OutputDataReceived += (sender, args) => onOutput(args.Data);
             gitProcess.ErrorDataReceived += (sender, args) => onError(args.Data);
 
-            try
-            {
-                //Run process
-                gitProcess.Start();
+            //Run process
+            bool started = gitProcess.Start();
 
-                gitProcess.BeginOutputReadLine();
-                gitProcess.BeginErrorReadLine();
-
-                gitProcess.WaitForExit();
-                gitProcess.Close();
-
-            } catch
+            if (!started)
             {
                 onError("Process for command " + command + " failed");
+                GitEvents.TriggerOnGitCommandComplete();
+                return;
             }
 
+            GitEvents.TriggerOnGitCommandStart();
+            gitProcess.BeginOutputReadLine();
+            gitProcess.BeginErrorReadLine();
+
+            gitProcess.WaitForExit();
+            gitProcess.Close();
+            GitEvents.TriggerOnGitCommandComplete();
             onComplete();
+
         }
+
     }
 
     /// <summary>
