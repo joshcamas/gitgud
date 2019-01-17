@@ -29,7 +29,7 @@ namespace GitGud.UI
         {
             GitCore.CheckoutCommit(commits[0], (output) =>
             {
-                GitGudWindow.PlanRefresh();
+                GitEvents.TriggerOnLocalChange();
                 AssetDatabase.Refresh(ImportAssetOptions.Default);
             });
         }

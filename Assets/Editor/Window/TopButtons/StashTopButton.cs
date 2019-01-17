@@ -31,12 +31,9 @@ namespace GitGud.UI
 
         private void OnFinishStashWindow(string message)
         {
-            GitGudWindow.DisableInput();
-
             GitCore.PushStash(message, (output) =>
             {
-                GitGudWindow.EnableInput();
-                GitGudWindow.PlanRefresh();
+                GitEvents.TriggerOnLocalChange();
             });
         }
     }

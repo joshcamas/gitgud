@@ -6,14 +6,14 @@ namespace GitGud.UI
 {
     public class GitAssetModificationProcessor : UnityEditor.AssetModificationProcessor
     {
-        static AssetMoveResult OnWillMoveAsset(string path)
+        static AssetMoveResult OnWillMoveAsset(string sourcePath, string destinationPath)
         {
             OnAssetModify();
 
             return AssetMoveResult.DidNotMove;
         }
 
-        static AssetDeleteResult OnWillDeleteAsset(string path)
+        static AssetDeleteResult OnWillDeleteAsset(string path, RemoveAssetOptions options)
         {
             OnAssetModify();
 
@@ -37,7 +37,14 @@ namespace GitGud.UI
 
         static void OnAssetModify()
         {
-            GitGudWindow.PlanRefresh();
+            //Wait for one frame (ugly)
+            EditorApplication.update += FrameDelay;
+        }
+
+        static void FrameDelay()
+        {
+            EditorApplication.update -= FrameDelay;
+            GitEvents.TriggerOnLocalChange();
         }
     }
 }

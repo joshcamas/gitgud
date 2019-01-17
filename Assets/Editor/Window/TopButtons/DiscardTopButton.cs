@@ -37,7 +37,7 @@ namespace GitGud.UI
 
             GitCore.DiscardAll((output) =>
             {
-                GitGudWindow.PlanRefresh();
+                GitEvents.TriggerOnLocalChange();
                 AssetDatabase.Refresh();
             });
         }
@@ -52,7 +52,7 @@ namespace GitGud.UI
             //Clean and reset
             GitGud.RunCommands(new string[]{ "clean -f -d", "reset --hard"}, (outputs) =>
             {
-                GitGudWindow.PlanRefresh();
+                GitEvents.TriggerOnLocalChange();
                 AssetDatabase.Refresh();
             });
 

@@ -46,12 +46,9 @@ namespace GitGud.UI
         //Run when button is clicked
         public override void OnClick(GitGudWindow window)
         {
-            GitGudWindow.DisableInput();
-
             GitCore.Push(true, (output) =>
             {
-                GitGudWindow.EnableInput();
-                GitGudWindow.PlanRefresh();
+                GitEvents.TriggerOnLocalChange();
             });
         }
 

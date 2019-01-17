@@ -20,30 +20,14 @@ namespace GitGud.UI
         private static bool planningRefresh = false;
         private static bool disableInput = false;
 
+        private bool isDrawing = false;
+
         //Window creation
         [MenuItem("Window/GitGud")]
         public static void ShowWindow()
         {
             //Show existing window instance. If one doesn't exist, make one.
             GitGudWindow.GetWindow(typeof(GitGudWindow), false, "GitGud");
-        }
-
-        //Used to plan a refresh after rendering current frame
-        public static void PlanRefresh()
-        {
-            planningRefresh = true;
-        }
-
-        //Used to enable input for window
-        public static void EnableInput()
-        {
-            disableInput = false;
-        }
-
-        //Used to disable input for window
-        public static void DisableInput()
-        {
-            disableInput = true;
         }
 
         //Scan for tab attributes
@@ -81,6 +65,17 @@ namespace GitGud.UI
             if (tabs.Count > 0)
                 tabs[0].OnEnable();
 
+            GitEvents.OnLocalChange += PlanRefresh;
+        }
+
+        private void PlanRefresh()
+        {
+            //Only refresh if not drawing
+            if (isDrawing)
+                planningRefresh = true;
+            else
+                Refresh();
+                
         }
 
         //Triggers a refresh on all gui elements
@@ -94,10 +89,16 @@ namespace GitGud.UI
 
             //Current tab
             tabs[selectedTab].Refresh();
+
+            planningRefresh = false;
+
+            Repaint();
         }
 
         void OnGUI()
         {
+            isDrawing = true;
+
             EditorGUI.BeginDisabledGroup(disableInput);
 
             RenderTopBar();
@@ -109,16 +110,10 @@ namespace GitGud.UI
 
             EditorGUI.EndDisabledGroup();
 
-            if (planningRefresh)
-            {
-                //Only refresh during repaint
-               // if(Event.current.type == EventType.Repaint)
-            //    {
-                    Refresh();
-                    planningRefresh = false;
-            //    }
-                
-            }
+            if (planningRefresh && Event.current.type == EventType.Repaint)
+                Refresh();
+
+            isDrawing = false;
 
         }
 

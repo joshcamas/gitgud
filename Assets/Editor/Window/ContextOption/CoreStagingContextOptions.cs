@@ -84,7 +84,7 @@ namespace GitGud.UI
         {
             GitCore.StagePaths(paths, (output) =>
             {
-                GitGudWindow.PlanRefresh();
+                GitEvents.TriggerOnLocalChange();
             });
 
         }
@@ -103,7 +103,7 @@ namespace GitGud.UI
         {
             GitCore.UnstagePaths(paths, (output) =>
             {
-                GitGudWindow.PlanRefresh();
+                GitEvents.TriggerOnLocalChange();
             });
 
         }
@@ -129,7 +129,7 @@ namespace GitGud.UI
                 GitCore.DiscardFiles(paths, (discardOutput) =>
                 {
                     //Refresh
-                    GitGudWindow.PlanRefresh();
+                    GitEvents.TriggerOnLocalChange();
                     AssetDatabase.Refresh(ImportAssetOptions.Default);
                 });
             });

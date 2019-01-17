@@ -194,7 +194,7 @@ namespace GitGud.UI
                     AutoPush();
                 else
                     //Trigger a refresh
-                    GitGudWindow.PlanRefresh();
+                    GitEvents.TriggerOnLocalChange();
             });
         }
 
@@ -203,7 +203,7 @@ namespace GitGud.UI
             GitCore.Push(true, (output) =>
             {
                 //Trigger a refresh
-                GitGudWindow.PlanRefresh();
+                GitEvents.TriggerOnLocalChange();
 
                 //Error
                 if (output.errorData != null)
