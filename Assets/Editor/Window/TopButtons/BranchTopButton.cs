@@ -16,13 +16,13 @@ namespace GitGud.UI
         public override bool IsDisabled()
         {
             //Always disabled for now
-            return true;
+            return false;
         }
 
         //Run when button is clicked
         public override void OnClick(GitGudWindow window)
         {
-
+            BranchWindow.ShowWindow(GitEvents.TriggerOnLocalChange);
         }
 
     }

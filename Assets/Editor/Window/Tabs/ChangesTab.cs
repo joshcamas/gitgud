@@ -23,6 +23,7 @@ namespace GitGud.UI
         private bool error = false;
         private string errorString;
 
+        private string branchName = "Scanning...";
 
         public override string GetName()
         {
@@ -42,6 +43,7 @@ namespace GitGud.UI
             Scan();
 
         }
+        
 
         public override void Render(GitGudWindow window)
         {
@@ -53,7 +55,7 @@ namespace GitGud.UI
                 return;
             }
 
-            EditorGUILayout.LabelField("Local Changes", EditorStyles.largeLabel);
+            EditorGUILayout.LabelField("Local Changes: " + branchName, EditorStyles.largeLabel);
 
             RenderStageButtons();
             unstagedFileViewer.Render(unstagedFiles);
@@ -220,6 +222,7 @@ namespace GitGud.UI
         /// </summary>
         private void Scan()
         {
+            //Scan status
             GitCore.Status(true,
                 (commandOutput) =>
                 {
@@ -235,6 +238,15 @@ namespace GitGud.UI
                     error = false;
                     BuildStageLists(commandOutput.outputData);
 
+                });
+
+            //Scan branch
+            GitCore.CurrentBranch((branch) =>
+                {
+                    branchName = branch;
+                },(error) =>
+                {
+                    branchName = "Error";
                 });
         }
 

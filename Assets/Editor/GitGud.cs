@@ -56,7 +56,7 @@ namespace GitGud
                 
                 (error) => {
                     //Error stream
-                    if (error != null)
+                    if (!string.IsNullOrEmpty(error))
                     {
                         //Special case: Stop line endings error
                         if (error.Contains("LF will be replaced by CRLF"))
@@ -64,6 +64,7 @@ namespace GitGud
 
                         if (error.Contains("The file will have its original line endings in your working directory"))
                             return;
+                        
 
                         if (errorData == null)
                             errorData = error;
@@ -110,7 +111,7 @@ namespace GitGud
             Process gitProcess = new Process();
             gitProcess.StartInfo = gitInfo;
             gitProcess.EnableRaisingEvents = true;
-
+            
             //Hook events
             gitProcess.OutputDataReceived += (sender, args) => onOutput(args.Data);
             gitProcess.ErrorDataReceived += (sender, args) => onError(args.Data);
@@ -126,9 +127,9 @@ namespace GitGud
             }
 
             GitEvents.TriggerOnGitCommandStart();
-            gitProcess.BeginOutputReadLine();
             gitProcess.BeginErrorReadLine();
-
+            gitProcess.BeginOutputReadLine();
+            
             gitProcess.WaitForExit();
             gitProcess.Close();
             GitEvents.TriggerOnGitCommandComplete();

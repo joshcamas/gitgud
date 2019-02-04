@@ -18,7 +18,7 @@ namespace GitGud.UI
 
         }
 
-        public void Render(List<Commit> commits)
+        public void Render(List<Commit> commits, Dictionary<string, Commit> commitsDict)
         {
             scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, false, GUIStyle.none, GUI.skin.verticalScrollbar);
 
@@ -41,6 +41,9 @@ namespace GitGud.UI
             EditorGUILayout.BeginHorizontal();
 
             GUIStyle style = new GUIStyle("Label");
+
+            if (commit.isCurrent)
+                style = new GUIStyle(EditorStyles.boldLabel);
 
             if (selected)
                 style.normal.textColor = Color.blue;

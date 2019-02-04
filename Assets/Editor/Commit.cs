@@ -15,6 +15,6 @@ namespace GitGud
         public string author_email;
         public string date;
         public string subject;
-
+        public bool isCurrent;
     }
 }

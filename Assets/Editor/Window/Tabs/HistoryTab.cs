@@ -2,12 +2,14 @@ using System.Collections.Generic;
 using System;
 using UnityEditor;
 using UnityEngine;
+using System.Linq;
 
 namespace GitGud.UI
 {
     [Tab(index = 40)]
     public class HistoryTab : Tab  
     {
+        private Dictionary<string,Commit> commitsDict;
         private List<Commit> commits;
         private CommitListGUI commitList;
 
@@ -50,16 +52,19 @@ namespace GitGud.UI
                     return;
                 }
 
-                this.commits = commits;
+                this.commitsDict = commits;
+
+                //Cache list form of dictionary
+                this.commits = commitsDict.Values.ToList();
             });
         }
 
         public override void Render(GitGudWindow window)
         {
-            if (commits == null)
+            if (commitsDict == null)
                 return;
 
-            commitList.Render(commits);
+            commitList.Render(commits, commitsDict);
         }
     }
 

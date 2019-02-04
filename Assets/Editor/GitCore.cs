@@ -8,6 +8,11 @@ namespace GitGud
     //Core functions
     public class GitCore
     {
+        public static void CreateBranch(string branchname, Action<CommandOutput> onComplete)
+        {
+            GitGud.RunCommand("checkout -b " + branchname, onComplete);
+        }
+
         public static void DiscardFiles(List<string> paths, Action<CommandOutput> onComplete)
         {
             string combinedPaths = GitUtility.QuoteAndCombinePaths(paths.ToArray());
@@ -34,7 +39,6 @@ namespace GitGud
         public static void CheckoutCommit(Commit commit, Action<CommandOutput> onComplete)
         {
             GitGud.RunCommand("checkout " + commit.hash + " .", onComplete);
-
         }
 
         public static void Status(bool shortMode, Action<CommandOutput> onComplete)
@@ -45,10 +49,27 @@ namespace GitGud
                 GitGud.RunCommand("status", onComplete);
         }
 
-        //Log with a internal format, which returns a list of commit objects
-        public static void Log(string filter, Action<CommandOutput,List<Commit>> onComplete)
+        //TODO: Use this new form of error checking in future functions
+        public static void CurrentBranch(Action<string> onSuccess,Action<string> onError=null)
         {
-            Action<CommandOutput> onLogComplete = (output) =>
+            GitGud.RunCommand("rev-parse --abbrev-ref HEAD", (output) => 
+            {
+                if(output.errorData != null)
+                {
+                    onError(null);
+                    return;
+                }
+                onSuccess(output.outputData);
+            });
+        }
+
+        //Log with a internal format, which returns a list of commit objects
+        public static void Log(string filter, Action<CommandOutput,Dictionary<string,Commit>> onComplete)
+        {
+            string currentHash = null;
+
+            //Run to scan all commits
+            Action<CommandOutput> onLogAllComplete = (output) =>
             {
                 //Error catching
                 if (output.errorData != null)
@@ -57,7 +78,7 @@ namespace GitGud
                     return;
                 }
 
-                List<Commit> commits = new List<Commit>();
+                Dictionary<string, Commit> commits = new Dictionary<string, Commit>();
 
                 if (output.outputData == null)
                 {
@@ -68,7 +89,7 @@ namespace GitGud
                 //Convert log string into commit format
                 string[] commitStrings = output.outputData.Split('\n');
 
-                foreach(string commitStr in commitStrings)
+                foreach (string commitStr in commitStrings)
                 {
                     string[] components = commitStr.Split(',');
                     Commit commit = new Commit();
@@ -79,20 +100,36 @@ namespace GitGud
                     commit.author_email = components[4];
                     commit.date = components[5];
                     commit.subject = components[6];
-
-                    commits.Add(commit);
+                    commit.isCurrent = currentHash == commit.hash;
+                    commits.Add(commit.hash, commit);
                 }
 
                 onComplete(output, commits);
             };
+            
+            Action<CommandOutput> onLogCurrentComplete = (output) =>
+            {
+                //Error catching
+                if (output.errorData != null)
+                {
+                    onComplete(output, null);
+                    return;
+                }
+
+                currentHash = output.outputData;
+
+                string format = "%H,%T,%P,%an,%ae,%ad,%s";
+
+                if (filter == "" || filter == null)
+                    GitGud.RunCommand("log --pretty=\"" + format + "\"", onLogAllComplete);
+                else
+                    GitGud.RunCommand("log --pretty=\"" + format + "\" " + filter, onLogAllComplete);
+            };
+
+            //Get current hash
+            GitGud.RunCommand("log -1 --pretty=\"%H\"", onLogCurrentComplete);
 
 
-            string format = "%H,%T,%P,%an,%ae,%ad,'%s";
-
-            if (filter == "" || filter == null)
-                GitGud.RunCommand("log --pretty=\"" + format + "\"", onLogComplete);
-            else
-                GitGud.RunCommand("log --pretty=\"" + format + "\" " + filter, onLogComplete);
         }
 
         //Log with a custom format, returns raw output string
